@@ -1,0 +1,12 @@
+git_repo_uri: git@github.com:dsg-tech/pks-onboarding.git
+git_branch: master
+git_private_key: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    .....
+    .....
+    ....
+    -----END OPENSSH PRIVATE KEY-----
+pks_api: pks-api.sample.co
+pks_cli_username: pksadmin
+pks_cli_password: <superPassword>
+pks_env: dev
