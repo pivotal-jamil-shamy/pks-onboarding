@@ -7,6 +7,6 @@ git_private_key: |
     ....
     -----END OPENSSH PRIVATE KEY-----
 pks_api: pks-api.sample.co
-pks_cli_username: pksadmin
+pks_cli_username: srv-pksadmin
 pks_cli_password: <superPassword>
 pks_env: dev
