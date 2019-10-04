@@ -1,0 +1,89 @@
+resources:
+- name: pks-onboarding-repo
+  type: git
+  source:
+    uri: ((git_repo_uri))
+    branch: ((git_branch))
+    private_key: ((git_private_key))
+
+jobs:
+- name: create-pks-cluster
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+  #  passed: [create-orgs]
+    trigger: true
+  - task: create-pks-cluster
+    file: pks-onboarding-repo/pks/ci/tasks/create-pks-cluster/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+
+- name: delete-pks-cluster
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+  #  passed: [create-orgs]
+    trigger: true
+  - task: delete-pks-cluster
+    file: pks-onboarding-repo/pks/ci/tasks/delete-pks-cluster/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+- name: resize-pks-cluster
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    trigger: true
+  - task: resize-pks-cluster
+    file: pks-onboarding-repo/pks/ci/tasks/resize-pks-cluster/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+- name: grant-group-cluster-admin
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    passed: 
+    - create-pks-cluster
+    trigger: true
+  - task: grant-group-cluster-admin
+    file: pks-onboarding-repo/pks/ci/tasks/grant-group-cluster-admin/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+- name: store-pks-cluster-kubeconfig-in-vault
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    passed: 
+    - grant-group-cluster-admin
+    trigger: true
+  - task: store-pks-cluster-kubeconfig-in-vault
+    file: pks-onboarding-repo/pks/ci/tasks/store-pks-cluster-kubeconfig-in-vault/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+      VAULT_URL: ((vault_url))
+      VAULT_ROLE_ID: ((vault_ci_role_id))
+      VAULT_SECRET_ID: ((vault_ci_secret_id))
+
+
+
+
+
+

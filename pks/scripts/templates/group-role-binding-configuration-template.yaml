@@ -1,0 +1,13 @@
+kind: ROLE_BINDING_TYPE
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: ROLE_OR_CLUSTER_ROLE_BINDING_NAME
+  namespace: default
+subjects:
+- kind: Group
+  name: oidc:NAME_OF_GROUP
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ROLE_TYPE
+  name: ROLE_OR_CLUSTER_ROLE_NAME
+  apiGroup: rbac.authorization.k8s.io

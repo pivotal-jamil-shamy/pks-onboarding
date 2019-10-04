@@ -1,0 +1,93 @@
+resources:
+- name: pks-onboarding-repo
+  type: git
+  source:
+    uri: ((git_repo_uri))
+    branch: ((git_branch))
+    private_key: ((git_private_key))
+
+jobs:
+- name: create-pks-cluster
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    passed: 
+    - delete-pks-cluster
+    trigger: true
+  - task: create-pks-cluster
+    file: pks-onboarding-repo/pks/ci/tasks/create-pks-cluster/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+
+- name: delete-pks-cluster
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    trigger: true
+  - task: delete-pks-cluster
+    file: pks-onboarding-repo/pks/ci/tasks/delete-pks-cluster/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+
+- name: resize-pks-cluster
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    trigger: true
+  - task: resize-pks-cluster
+    file: pks-onboarding-repo/pks/ci/tasks/resize-pks-cluster/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+
+- name: grant-group-cluster-admin
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    passed: 
+    - create-pks-cluster
+    - delete-pks-cluster
+    - resize-pks-cluster
+    trigger: true
+  - task: grant-group-cluster-admin
+    file: pks-onboarding-repo/pks/ci/tasks/grant-group-cluster-admin/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+
+- name: grant-group-cluster-readonly
+  build_logs_to_retain: 25
+  plan:
+  - get: pks-onboarding-repo
+    passed: 
+    - create-pks-cluster
+    - delete-pks-cluster
+    - resize-pks-cluster
+    trigger: true
+  - task: grant-group-cluster-admin
+    file: pks-onboarding-repo/pks/ci/tasks/grant-group-cluster-readonly/task.yml
+    params:
+      PCF_PKS_API: ((pks_api))
+      PKS_CLI_USER: ((pks_cli_username))
+      PKS_CLI_PASSWORD: ((pks_cli_password))
+      PKS_ENV: ((pks_env))
+
+
+
+
+
+
