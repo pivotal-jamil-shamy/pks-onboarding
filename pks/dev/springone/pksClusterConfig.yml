@@ -1,0 +1,8 @@
+pks_plan_name: 'small'
+pks_cluster_name: 'springone'
+pks_cluster_master_node_hostname: "springone.dsgtech.co"
+pks_cluster_number_of_workers: 3
+pks_cluster_admin_ldap_group: 
+- pks-manager
+pks_cluster_readonly_ldap_group:
+- pks-cluster-ro
